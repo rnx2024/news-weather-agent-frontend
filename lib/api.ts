@@ -1,63 +1,33 @@
 // lib/api.ts
-export const API_BASE = process.env.BACKEND_URL!;
-export const API_KEY = process.env.EXTERNAL_API_KEY!;
-
-if (!API_BASE) {
-  // This will surface early during build/dev if misconfigured
-  // eslint-disable-next-line no-console
-  console.warn("BACKEND_URL is not set");
-}
-if (!API_KEY) {
-  // eslint-disable-next-line no-console
-  console.warn("API_KEY is not set");
-}
+// Frontend must NOT read server env vars (BACKEND_URL / EXTERNAL_API_KEY).
+// It should call the Next.js proxy routes: /api/chat, /api/weather, /api/news.
 
 export async function chatRequest(place: string, question: string) {
-  if (!API_BASE) {
-    throw new Error("BACKEND_URL is not set");
-  }
-  if (!API_KEY) {
-    throw new Error("API_KEY is not set");
-  }
-
-  const res = await fetch(`${API_BASE}/chat`, {
+  const res = await fetch("/api/chat", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "x-api-key": API_KEY,
     },
     body: JSON.stringify({ place, question }),
   });
 
   if (!res.ok) {
     const text = await res.text().catch(() => "");
-    throw new Error(`Backend error ${res.status}: ${text || res.statusText}`);
+    throw new Error(`API error ${res.status}: ${text || res.statusText}`);
   }
 
   return res.json() as Promise<{ final: string }>;
 }
 
 export async function weatherRequest(place: string) {
-  if (!API_BASE) {
-    throw new Error("BACKEND_URL is not set");
-  }
-  if (!API_KEY) {
-    throw new Error("API_KEY is not set");
-  }
-
-  const url = new URL(`${API_BASE}/weather`);
+  const url = new URL("/api/weather", window.location.origin);
   url.searchParams.set("place", place);
 
-  const res = await fetch(url.toString(), {
-    method: "GET",
-    headers: {
-      "x-api-key": API_KEY,
-    },
-  });
+  const res = await fetch(url.toString(), { method: "GET" });
 
   if (!res.ok) {
     const text = await res.text().catch(() => "");
-    throw new Error(`Backend error ${res.status}: ${text || res.statusText}`);
+    throw new Error(`API error ${res.status}: ${text || res.statusText}`);
   }
 
   return res.json() as Promise<{ place: string; summary: string }>;
@@ -71,26 +41,14 @@ type NewsItem = {
 };
 
 export async function newsRequest(place: string) {
-  if (!API_BASE) {
-    throw new Error("BACKEND_URL is not set");
-  }
-  if (!API_KEY) {
-    throw new Error("API_KEY is not set");
-  }
-
-  const url = new URL(`${API_BASE}/news`);
+  const url = new URL("/api/news", window.location.origin);
   url.searchParams.set("place", place);
 
-  const res = await fetch(url.toString(), {
-    method: "GET",
-    headers: {
-      "x-api-key": API_KEY,
-    },
-  });
+  const res = await fetch(url.toString(), { method: "GET" });
 
   if (!res.ok) {
     const text = await res.text().catch(() => "");
-    throw new Error(`Backend error ${res.status}: ${text || res.statusText}`);
+    throw new Error(`API error ${res.status}: ${text || res.statusText}`);
   }
 
   return res.json() as Promise<{
