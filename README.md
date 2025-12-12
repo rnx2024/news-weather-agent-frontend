@@ -1,36 +1,94 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# News & Weather Intelligence Frontend
 
-## Getting Started
+This repository contains the **frontend application** for a location-aware AI agent that generates concise, actionable summaries by combining **live weather data**, **local news**, and **contextual risk signals**.
 
-First, run the development server:
+The frontend provides a modern, card-based interface where users can select a location, ask natural-language questions, and receive structured responses from a secured backend agent API.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+---
+
+## Overview
+
+The application is built with **Next.js (App Router)** and **React**, styled using **Tailwind CSS** with a clean, minimal, and modern UI.  
+It acts as a **thin client**: all intelligence, data fetching, and reasoning are handled by the backend.
+
+---
+
+## Key Features
+
+- **Location-based querying**
+  - Preset city buttons and free-text location input
+- **Conversational interface**
+  - User/agent message bubbles
+  - Loading indicators during processing
+- **Quick prompts**
+  - One-click predefined questions
+- **Secure API communication**
+  - Requests authenticated via `x-api-key`
+  - Backend URL configurable via environment variables
+- **Modern UI design**
+  - Card-style layout
+  - Rounded components
+  - Clear visual hierarchy
+
+---
+
+## Tech Stack
+
+- **Framework:** Next.js (App Router)
+- **UI Library:** React
+- **Styling:** Tailwind CSS
+- **Language:** TypeScript
+- **API Calls:** Fetch API
+- **State Management:** React hooks
+
+---
+
+## Getting Started (Local Development)
+
+1. Install dependencies:
+
+```
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Create a `.env.local` file in the project root:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+NEXT_PUBLIC_BACKEND_URL=https://your-backend-url  
+NEXT_PUBLIC_AGENT_KEY=your-api-key  
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Start the development server:
 
-## Learn More
+npm run dev  
 
-To learn more about Next.js, take a look at the following resources:
+Open the application:
+``
+http://localhost:3000  
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Edits to `app/page.tsx` or files under `components/` will hot-reload automatically.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+The frontend expects a backend API with the following contract:
 
-## Deploy on Vercel
+Endpoint:  
+POST /chat  
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Headers:  
+x-api-key: <API_KEY>  
+Content-Type: application/json  
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```
+Request Body:
+{
+  "place": "string",
+  "question": "string"
+}
+
+Response Body:
+{
+  "final": "string"
+}
+```
+
+- The backend is responsible for fetching live weather data, fetching relevant news, and synthesizing a concise response using an AI agent.
+
+- This frontend can be deployed to any platform that supports Next.js. such as Vercel or Netlify. Ensure all required environment variables are configured in the deployment settings.
