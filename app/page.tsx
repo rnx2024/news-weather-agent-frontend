@@ -34,7 +34,7 @@ export default function Home() {
                 className="text-base font-medium leading-relaxed"
                 style={{ color: "#2a4157ff" }}
               >
-                Ask about any city. Smart news, Smart Insights.
+                Ask about any city. Smart News, Smart Insights.
               </p>
             </div>
           </header>
