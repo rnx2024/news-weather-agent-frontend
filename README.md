@@ -22,9 +22,6 @@ It acts as a **thin client**: all intelligence, data fetching, and reasoning are
   - Loading indicators during processing
 - **Quick prompts**
   - One-click predefined questions
-- **Secure API communication**
-  - Requests authenticated via `x-api-key`
-  - Backend URL configurable via environment variables
 - **Modern UI design**
   - Card-style layout
   - Rounded components
@@ -38,25 +35,15 @@ It acts as a **thin client**: all intelligence, data fetching, and reasoning are
 - **UI Library:** React
 - **Styling:** Tailwind CSS
 - **Language:** TypeScript
-- **API Calls:** Fetch API
 - **State Management:** React hooks
 
 ---
 
 ## Getting Started (Local Development)
 
-1. Install dependencies:
+1. Install dependencies
 
-```
-npm install
-```
-
-Create a `.env.local` file in the project root:
-
-NEXT_PUBLIC_BACKEND_URL=https://your-backend-url  
-NEXT_PUBLIC_AGENT_KEY=your-api-key  
-
-Start the development server:
+2. Start the development server:
 
 npm run dev  
 
@@ -67,28 +54,6 @@ http://localhost:3000
 
 Edits to `app/page.tsx` or files under `components/` will hot-reload automatically.
 
-The frontend expects a backend API with the following contract:
-
-Endpoint:  
-POST /chat  
-
-Headers:  
-x-api-key: <API_KEY>  
-Content-Type: application/json  
-
-```
-Request Body:
-{
-  "place": "string",
-  "question": "string"
-}
-
-Response Body:
-{
-  "final": "string"
-}
-```
-
 - The backend is responsible for fetching live weather data, fetching relevant news, and synthesizing a concise response using an AI agent.
 
-- This frontend can be deployed to any platform that supports Next.js. such as Vercel or Netlify. Ensure all required environment variables are configured in the deployment settings.
+- This frontend can be deployed to any platform that supports Next.js. such as Vercel or Netlify. 
