@@ -1,0 +1,10 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Outer circle -->
+  <circle cx="32" cy="32" r="28" stroke="#003366" stroke-width="3"></circle>
+
+  <!-- Compass needle -->
+  <path d="M32 12 L36 32 L32 52 L28 32 Z" fill="#003366"></path>
+
+  <!-- Inner circle -->
+  <circle cx="32" cy="32" r="4" fill="#003366"></circle>
+</svg>
