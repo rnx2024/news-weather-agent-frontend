@@ -1,23 +1,23 @@
 // lib/api.ts
-export const API_BASE = process.env.NEXT_PUBLIC_BACKEND_URL!;
-export const API_KEY = process.env.NEXT_PUBLIC_AGENT_KEY!;
+export const API_BASE = process.env.BACKEND_URL!;
+export const API_KEY = process.env.EXTERNAL_API_KEY!;
 
 if (!API_BASE) {
   // This will surface early during build/dev if misconfigured
   // eslint-disable-next-line no-console
-  console.warn("NEXT_PUBLIC_BACKEND_URL is not set");
+  console.warn("BACKEND_URL is not set");
 }
 if (!API_KEY) {
   // eslint-disable-next-line no-console
-  console.warn("NEXT_PUBLIC_AGENT_KEY is not set");
+  console.warn("API_KEY is not set");
 }
 
 export async function chatRequest(place: string, question: string) {
   if (!API_BASE) {
-    throw new Error("NEXT_PUBLIC_BACKEND_URL is not set");
+    throw new Error("BACKEND_URL is not set");
   }
   if (!API_KEY) {
-    throw new Error("NEXT_PUBLIC_AGENT_KEY is not set");
+    throw new Error("API_KEY is not set");
   }
 
   const res = await fetch(`${API_BASE}/chat`, {
@@ -39,10 +39,10 @@ export async function chatRequest(place: string, question: string) {
 
 export async function weatherRequest(place: string) {
   if (!API_BASE) {
-    throw new Error("NEXT_PUBLIC_BACKEND_URL is not set");
+    throw new Error("BACKEND_URL is not set");
   }
   if (!API_KEY) {
-    throw new Error("NEXT_PUBLIC_AGENT_KEY is not set");
+    throw new Error("API_KEY is not set");
   }
 
   const url = new URL(`${API_BASE}/weather`);
@@ -72,10 +72,10 @@ type NewsItem = {
 
 export async function newsRequest(place: string) {
   if (!API_BASE) {
-    throw new Error("NEXT_PUBLIC_BACKEND_URL is not set");
+    throw new Error("BACKEND_URL is not set");
   }
   if (!API_KEY) {
-    throw new Error("NEXT_PUBLIC_AGENT_KEY is not set");
+    throw new Error("API_KEY is not set");
   }
 
   const url = new URL(`${API_BASE}/news`);
