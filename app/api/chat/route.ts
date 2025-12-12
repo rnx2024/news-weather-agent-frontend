@@ -1,8 +1,13 @@
 import { NextResponse } from "next/server";
+// Force module + force runtime behavior (also avoids static caching surprises)
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
 export async function POST(req: Request) {
   const backend = process.env.BACKEND_URL;
   const apiKey = process.env.EXTERNAL_API_KEY;
+
+
 
   if (!backend || !apiKey) {
     return NextResponse.json(
