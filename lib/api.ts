@@ -1,7 +1,4 @@
 // lib/api.ts
-// Frontend must NOT read server env vars (BACKEND_URL / EXTERNAL_API_KEY).
-// It should call the Next.js proxy routes: /api/chat, /api/weather, /api/news.
-
 export async function chatRequest(place: string, question: string) {
   const res = await fetch("/api/chat", {
     method: "POST",
@@ -20,10 +17,9 @@ export async function chatRequest(place: string, question: string) {
 }
 
 export async function weatherRequest(place: string) {
-  const url = new URL("/api/weather", window.location.origin);
-  url.searchParams.set("place", place);
-
-  const res = await fetch(url.toString(), { method: "GET" });
+  const res = await fetch(`/api/weather?place=${encodeURIComponent(place)}`, {
+    method: "GET",
+  });
 
   if (!res.ok) {
     const text = await res.text().catch(() => "");
@@ -41,10 +37,9 @@ type NewsItem = {
 };
 
 export async function newsRequest(place: string) {
-  const url = new URL("/api/news", window.location.origin);
-  url.searchParams.set("place", place);
-
-  const res = await fetch(url.toString(), { method: "GET" });
+  const res = await fetch(`/api/news?place=${encodeURIComponent(place)}`, {
+    method: "GET",
+  });
 
   if (!res.ok) {
     const text = await res.text().catch(() => "");
