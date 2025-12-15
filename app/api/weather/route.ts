@@ -1,20 +1,11 @@
 import { NextResponse } from "next/server";
+import { config } from "@/server/config";
 
-// Force module + force runtime behavior (also avoids static caching surprises)
+// Keep as in your original
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function GET(req: Request) {
-  const backend = process.env.BACKEND_URL;
-  const apiKey = process.env.EXTERNAL_API_KEY;
-
-  if (!backend || !apiKey) {
-    return NextResponse.json(
-      { error: "Server not configured" },
-      { status: 500 }
-    );
-  }
-
   const { searchParams } = new URL(req.url);
   const place = searchParams.get("place") ?? "";
 
@@ -25,13 +16,13 @@ export async function GET(req: Request) {
     );
   }
 
-  const url = new URL(`${backend}/weather`);
+  const url = new URL(`${config.backendUrl}/weather`);
   url.searchParams.set("place", place);
 
   const res = await fetch(url.toString(), {
     method: "GET",
     headers: {
-      "x-api-key": apiKey,
+      "x-api-key": config.apiKey,
     },
     cache: "no-store",
   });

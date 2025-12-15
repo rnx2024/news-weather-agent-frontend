@@ -1,28 +1,18 @@
 import { NextResponse } from "next/server";
-// Force module + force runtime behavior (also avoids static caching surprises)
+import { config } from "@/server/config";
+
+// Keep these since they exist in your original code
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function POST(req: Request) {
-  const backend = process.env.BACKEND_URL;
-  const apiKey = process.env.EXTERNAL_API_KEY;
-
-
-
-  if (!backend || !apiKey) {
-    return NextResponse.json(
-      { error: "Server not configured" },
-      { status: 500 }
-    );
-  }
-
   const body = await req.json();
 
-  const res = await fetch(`${backend}/chat`, {
+  const res = await fetch(`${config.backendUrl}/chat`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "x-api-key": apiKey,
+      "x-api-key": config.apiKey,
     },
     body: JSON.stringify(body),
     cache: "no-store",
