@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
-import { config } from "@/server/config";
+import { config } from "../_server/config";
 
-// Keep these since they exist in your original code
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 

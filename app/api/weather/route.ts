@@ -1,39 +1,29 @@
 import { NextResponse } from "next/server";
-import { config } from "@/server/config";
+import { config } from "../_server/config";
 
-// Keep as in your original
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
-  const place = searchParams.get("place") ?? "";
+  const place = searchParams.get("place");
 
   if (!place) {
-    return NextResponse.json(
-      { error: "Missing place parameter" },
-      { status: 400 }
-    );
+    return NextResponse.json({ error: "Missing place parameter" }, { status: 400 });
   }
 
   const url = new URL(`${config.backendUrl}/weather`);
   url.searchParams.set("place", place);
 
   const res = await fetch(url.toString(), {
-    method: "GET",
-    headers: {
-      "x-api-key": config.apiKey,
-    },
+    headers: { "x-api-key": config.apiKey },
     cache: "no-store",
   });
 
-  const text = await res.text();
-
-  return new NextResponse(text, {
+  return new NextResponse(await res.text(), {
     status: res.status,
     headers: {
-      "Content-Type":
-        res.headers.get("content-type") ?? "application/json",
+      "Content-Type": res.headers.get("content-type") ?? "application/json",
     },
   });
 }
