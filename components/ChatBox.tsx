@@ -6,7 +6,7 @@ import { useState, type KeyboardEvent } from "react";
 import MessageBubble from "./MessageBubble";
 import LoadingDots from "./LoadingDots";
 
-type Msg = { role: "user" | "assistant"; text: string };
+type Msg = { id: string; role: "user" | "assistant"; text: string };
 
 const PRESET_PLACES = ["Vigan", "Laoag", "Manila", "Cebu", "Davao"];
 const PRESET_QUESTIONS = [
@@ -26,7 +26,7 @@ export default function ChatBox() {
     const q = (question ?? input).trim();
     if (!q) return;
 
-    const userMsg: Msg = { role: "user", text: q };
+    const userMsg: Msg = { id: crypto.randomUUID(), role: "user", text: q };
     setMessages((m) => [...m, userMsg]);
     setLoading(true);
 
@@ -34,12 +34,14 @@ export default function ChatBox() {
       // updated: no debug arg, matches backend { place, question }
       const res = await chatRequest(place, q);
       const botMsg: Msg = {
+        id: crypto.randomUUID(),
         role: "assistant",
         text: res.final || "(no response from agent)",
       };
       setMessages((m) => [...m, botMsg]);
     } catch (e: any) {
       const errMsg: Msg = {
+        id: crypto.randomUUID(),
         role: "assistant",
         text: `Error contacting backend: ${e.message}`,
       };
@@ -65,9 +67,13 @@ export default function ChatBox() {
       <section className="rounded-2xl border border-slate-200 bg-blue-100 p-5 shadow-md space-y-3">
         <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wide text-slate-500">
+            <label
+              htmlFor="city"
+              className="block text-xs font-semibold uppercase tracking-wide text-slate-500"
+            >
               Location
             </label>
+
             <p className="text-xs text-slate-500">
               Choose a city or type your own.
             </p>
@@ -84,9 +90,7 @@ export default function ChatBox() {
                     : "text-slate-700 border-slate-300 bg-white hover:bg-slate-50"
                 }`}
                 style={
-                  p === place
-                    ? { backgroundColor: "#457bb0ff" }
-                    : undefined
+                  p === place ? { backgroundColor: "#457bb0ff" } : undefined
                 }
               >
                 {p}
@@ -96,6 +100,7 @@ export default function ChatBox() {
         </div>
 
         <input
+          id="city"
           className="mt-3 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm focus:border-[#3399FF] focus:outline-none focus:ring-1 focus:ring-[#3399FF]"
           value={place}
           onChange={(e) => setPlace(e.target.value)}
@@ -110,8 +115,8 @@ export default function ChatBox() {
             Ask about weather, safety, or recent news for the selected location.
           </p>
         )}
-        {messages.map((m, idx) => (
-          <MessageBubble key={idx} role={m.role} text={m.text} />
+        {messages.map((m) => (
+          <MessageBubble key={m.id} role={m.role} text={m.text} />
         ))}
         {loading && (
           <div className="flex justify-start pt-1">

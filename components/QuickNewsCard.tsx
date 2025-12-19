@@ -5,6 +5,7 @@ import { useState, type FormEvent } from "react";
 import { newsRequest } from "../lib/api";
 
 type NewsItem = {
+  id: string; // ✅ added for stable React keys
   title: string;
   source?: string;
   date?: string;
@@ -28,8 +29,12 @@ export default function QuickNewsCard() {
 
     try {
       const res = await newsRequest(trimmed);
-      // Only keep essentials: place + items; ignore note, recent_count in UI
-      setItems(res.items ?? []);
+      // ✅ add stable ids for rendering keys (no backend change needed)
+      const normalized: NewsItem[] = (res.items ?? []).map((it: Omit<NewsItem, "id">) => ({
+        ...it,
+        id: crypto.randomUUID(),
+      }));
+      setItems(normalized);
     } catch (err: any) {
       setError(err?.message ?? "News request failed");
     } finally {
@@ -40,12 +45,8 @@ export default function QuickNewsCard() {
   return (
     <section className="rounded-2xl border border-slate-200 bg-sky-100 p-4 shadow-md space-y-3">
       <div>
-        <h2 className="text-sm font-semibold text-slate-800">
-          Quick News
-        </h2>
-        <p className="text-xs text-slate-500">
-          Top headlines for a city or topic.
-        </p>
+        <h2 className="text-sm font-semibold text-slate-800">Quick News</h2>
+        <p className="text-xs text-slate-500">Top headlines for a city or topic.</p>
       </div>
 
       <form onSubmit={onSubmit} className="flex gap-2">
@@ -70,27 +71,21 @@ export default function QuickNewsCard() {
 
         {!error && items && items.length > 0 && (
           <ul className="space-y-1">
-            {items.slice(0, 3).map((item, idx) => (
-              <li key={idx} className="leading-snug">
+            {items.slice(0, 3).map((item) => (
+              <li key={item.id} className="leading-snug">
                 <span className="font-medium">{item.title}</span>
-                {item.source && (
-                  <span className="text-slate-500"> · {item.source}</span>
-                )}
-                {item.date && (
-                  <span className="text-slate-400"> · {item.date}</span>
-                )}
+                {item.source && <span className="text-slate-500"> · {item.source}</span>}
+                {item.date && <span className="text-slate-400"> · {item.date}</span>}
               </li>
             ))}
           </ul>
         )}
 
-        {!error && items && items.length === 0 && !loading && (
+        {!error && items?.length === 0 && !loading && (
           <p className="text-slate-400">No recent headlines found.</p>
         )}
 
-        {!error && !items && !loading && (
-          <p className="text-slate-400">No news queried yet.</p>
-        )}
+        {!error && !items && !loading && <p className="text-slate-400">No news queried yet.</p>}
       </div>
     </section>
   );

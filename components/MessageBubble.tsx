@@ -4,7 +4,9 @@ type Props = {
   text: string;
 };
 
-export default function MessageBubble({ role, text }: Props) {
+export default function MessageBubble(
+  { role, text }: Readonly<Props>
+) {
   const isUser = role === "user";
 
   return (
