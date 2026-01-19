@@ -19,7 +19,7 @@ export default function Home() {
           <header className="mb-4 flex items-center gap-4">
             <img
               src="/smart-news-logo.svg"
-              alt="SmartNews Logo"
+              alt="NewsTrips Logo"
               className="h-12 w-12"
             />
 

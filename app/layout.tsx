@@ -3,8 +3,8 @@ import "./globals.css";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "SmartNews - Smart News, Smart Insights",
-  description: "SmartNews is the perfect companion for your perfect vacation.",
+  title: "NewsTrips - Smart News, Smart Insights",
+  description: "NewsTrips is your perfect trip companion.",
   icons: {
     icon: "/smart-news-logo.svg",    // favicon replacement
   },
