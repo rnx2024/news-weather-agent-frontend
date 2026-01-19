@@ -28,7 +28,7 @@ export default function Home() {
                 className="text-4xl font-extrabold tracking-tight"
                 style={{ color: "#275685ff" }}
               >
-                SmartNews
+                NewsTrips
               </h1>
               <p
                 className="text-base font-medium leading-relaxed"
