@@ -19,7 +19,7 @@ export default function Home() {
           <header className="mb-4 flex items-center gap-4">
             <img
               src="/smart-news-logo.svg"
-              alt="NewsTrips Logo"
+              alt="TripBites Logo"
               className="h-12 w-12"
             />
 
@@ -28,7 +28,7 @@ export default function Home() {
                 className="text-4xl font-extrabold tracking-tight"
                 style={{ color: "#275685ff" }}
               >
-                NewsTrips
+                TripBites
               </h1>
               <p
                 className="text-base font-medium leading-relaxed"
