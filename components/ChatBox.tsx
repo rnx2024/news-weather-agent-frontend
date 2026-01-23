@@ -71,7 +71,7 @@ export default function ChatBox() {
               htmlFor="city"
               className="block text-xs font-semibold uppercase tracking-wide text-slate-500"
             >
-              Location
+              City
             </label>
 
             <p className="text-xs text-slate-500">
