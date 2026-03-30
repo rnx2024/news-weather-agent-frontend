@@ -7,7 +7,13 @@ type Props = {
   sources?: { type: string }[];
 };
 
-const LINK_PATTERN = /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)|(https?:\/\/[^\s]+)/g;
+type LinkMatch = {
+  start: number;
+  raw: string;
+  markdownLabel?: string;
+  markdownUrl?: string;
+  rawUrl?: string;
+};
 
 export default function MessageBubble(
   { role, text, riskLevel, travelAdvice, sources }: Readonly<Props>
@@ -57,17 +63,17 @@ function renderInlineLinks(text: string, isUser: boolean, lineIndex: number) {
   const nodes: Array<string | React.JSX.Element> = [];
   let lastIndex = 0;
 
-  for (const match of text.matchAll(LINK_PATTERN)) {
-    const raw = match[0];
-    const start = match.index ?? 0;
+  for (const match of findLinks(text)) {
+    const raw = match.raw;
+    const start = match.start;
 
     if (start > lastIndex) {
       nodes.push(text.slice(lastIndex, start));
     }
 
-    const markdownLabel = match[1];
-    const markdownUrl = match[2];
-    const rawUrl = match[3];
+    const markdownLabel = match.markdownLabel;
+    const markdownUrl = match.markdownUrl;
+    const rawUrl = match.rawUrl;
 
     if (markdownLabel && markdownUrl) {
       nodes.push(
@@ -108,6 +114,101 @@ function renderInlineLinks(text: string, isUser: boolean, lineIndex: number) {
   }
 
   return nodes;
+}
+
+function findLinks(text: string): LinkMatch[] {
+  const matches: LinkMatch[] = [];
+  let index = 0;
+
+  while (index < text.length) {
+    const nextBracket = text.indexOf("[", index);
+    const nextHttp = findNextHttp(text, index);
+
+    if (nextBracket === -1 && nextHttp === -1) {
+      break;
+    }
+
+    const useBracket =
+      nextBracket !== -1 && (nextHttp === -1 || nextBracket < nextHttp);
+
+    if (useBracket) {
+      const labelEnd = text.indexOf("]", nextBracket + 1);
+      if (labelEnd !== -1 && text[labelEnd + 1] === "(") {
+        const urlStart = labelEnd + 2;
+        if (
+          text.startsWith("http://", urlStart) ||
+          text.startsWith("https://", urlStart)
+        ) {
+          const urlEnd = text.indexOf(")", urlStart);
+          if (urlEnd !== -1) {
+            const markdownLabel = text.slice(nextBracket + 1, labelEnd);
+            const markdownUrl = text.slice(urlStart, urlEnd);
+            if (markdownLabel && markdownUrl) {
+              matches.push({
+                start: nextBracket,
+                raw: text.slice(nextBracket, urlEnd + 1),
+                markdownLabel,
+                markdownUrl,
+              });
+              index = urlEnd + 1;
+              continue;
+            }
+          }
+        }
+      }
+
+      index = nextBracket + 1;
+      continue;
+    }
+
+    if (nextHttp !== -1) {
+      const urlEnd = findUrlEnd(text, nextHttp);
+      if (urlEnd > nextHttp) {
+        const rawUrl = text.slice(nextHttp, urlEnd);
+        matches.push({ start: nextHttp, raw: rawUrl, rawUrl });
+        index = urlEnd;
+        continue;
+      }
+    }
+
+    index += 1;
+  }
+
+  return matches;
+}
+
+function findNextHttp(text: string, fromIndex: number) {
+  const httpIndex = text.indexOf("http://", fromIndex);
+  const httpsIndex = text.indexOf("https://", fromIndex);
+
+  if (httpIndex === -1) {
+    return httpsIndex;
+  }
+
+  if (httpsIndex === -1) {
+    return httpIndex;
+  }
+
+  return Math.min(httpIndex, httpsIndex);
+}
+
+function findUrlEnd(text: string, startIndex: number) {
+  let index = startIndex;
+  while (index < text.length && !isWhitespace(text.charCodeAt(index))) {
+    index += 1;
+  }
+  return index;
+}
+
+function isWhitespace(charCode: number) {
+  return (
+    charCode === 0x20 || // space
+    charCode === 0x09 || // tab
+    charCode === 0x0a || // line feed
+    charCode === 0x0d || // carriage return
+    charCode === 0x0b || // vertical tab
+    charCode === 0x0c // form feed
+  );
 }
 
 function trimTrailingPunctuation(url: string) {
