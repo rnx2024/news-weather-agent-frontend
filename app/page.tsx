@@ -40,7 +40,7 @@ export default function Home() {
                 className="max-w-2xl text-[1.02rem] font-normal leading-7"
                 style={{ color: "#2a4157ff" }}
               >
-                Professional destination briefings grounded in weather, local developments, and practical travel impact.
+                Destination briefings grounded in weather, local developments, and practical travel impact.
               </p>
             </div>
           </header>
