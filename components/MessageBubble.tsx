@@ -212,5 +212,22 @@ function isWhitespace(charCode: number) {
 }
 
 function trimTrailingPunctuation(url: string) {
-  return url.replace(/[),.!?:;]+$/g, "");
+  let end = url.length;
+  while (end > 0) {
+    const charCode = url.charCodeAt(end - 1);
+    const isPunctuation =
+      charCode === 0x29 || // )
+      charCode === 0x2c || // ,
+      charCode === 0x2e || // .
+      charCode === 0x21 || // !
+      charCode === 0x3f || // ?
+      charCode === 0x3a || // :
+      charCode === 0x3b; // ;
+    if (!isPunctuation) {
+      break;
+    }
+    end -= 1;
+  }
+
+  return end === url.length ? url : url.slice(0, end);
 }
