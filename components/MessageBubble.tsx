@@ -15,6 +15,11 @@ type LinkMatch = {
   rawUrl?: string;
 };
 
+type LinkStep = {
+  match?: LinkMatch;
+  nextIndex: number;
+};
+
 export default function MessageBubble(
   { role, text, riskLevel, travelAdvice, sources }: Readonly<Props>
 ) {
@@ -85,40 +90,46 @@ function findLinks(text: string): LinkMatch[] {
   let index = 0;
 
   while (index < text.length) {
-    const nextBracket = text.indexOf("[", index);
-    const nextHttp = findNextHttp(text, index);
-
-    if (nextBracket === -1 && nextHttp === -1) {
+    const step = nextLinkStep(text, index);
+    if (!step) {
       break;
     }
-
-    const useBracket =
-      nextBracket !== -1 && (nextHttp === -1 || nextBracket < nextHttp);
-
-    if (useBracket) {
-      const parsed = parseMarkdownLink(text, nextBracket);
-      if (parsed) {
-        matches.push(parsed.match);
-        index = parsed.nextIndex;
-      } else {
-        index = nextBracket + 1;
-      }
-      continue;
+    if (step.match) {
+      matches.push(step.match);
     }
-
-    if (nextHttp !== -1) {
-      const parsed = parseRawUrl(text, nextHttp);
-      if (parsed) {
-        matches.push(parsed.match);
-        index = parsed.nextIndex;
-        continue;
-      }
-    }
-
-    index = Math.max(nextHttp, nextBracket) + 1;
+    index = step.nextIndex;
   }
 
   return matches;
+}
+
+function nextLinkStep(text: string, index: number): LinkStep | null {
+  const nextBracket = text.indexOf("[", index);
+  const nextHttp = findNextHttp(text, index);
+
+  if (nextBracket === -1 && nextHttp === -1) {
+    return null;
+  }
+
+  const useBracket =
+    nextBracket !== -1 && (nextHttp === -1 || nextBracket < nextHttp);
+
+  if (useBracket) {
+    const parsed = parseMarkdownLink(text, nextBracket);
+    if (parsed) {
+      return { match: parsed.match, nextIndex: parsed.nextIndex };
+    }
+    return { nextIndex: nextBracket + 1 };
+  }
+
+  if (nextHttp !== -1) {
+    const parsed = parseRawUrl(text, nextHttp);
+    if (parsed) {
+      return { match: parsed.match, nextIndex: parsed.nextIndex };
+    }
+  }
+
+  return { nextIndex: Math.max(nextHttp, nextBracket) + 1 };
 }
 
 function findNextHttp(text: string, fromIndex: number) {
