@@ -54,59 +54,23 @@ export default function MessageBubble(
 }
 
 function renderMessageText(text: string, isUser: boolean) {
-  return text.split("\n").map((line, lineIndex) => (
-    <p key={`line-${lineIndex}`}>{renderInlineLinks(line, isUser, lineIndex)}</p>
-  ));
+  const lines = text.split("\n");
+  let offset = 0;
+  return lines.map((line) => {
+    const key = buildLineKey(line, offset);
+    offset += line.length + 1;
+    return <p key={key}>{renderInlineLinks(line, isUser)}</p>;
+  });
 }
 
-function renderInlineLinks(text: string, isUser: boolean, lineIndex: number) {
+function renderInlineLinks(text: string, isUser: boolean) {
   const nodes: Array<string | React.JSX.Element> = [];
   let lastIndex = 0;
 
   for (const match of findLinks(text)) {
-    const raw = match.raw;
-    const start = match.start;
-
-    if (start > lastIndex) {
-      nodes.push(text.slice(lastIndex, start));
-    }
-
-    const markdownLabel = match.markdownLabel;
-    const markdownUrl = match.markdownUrl;
-    const rawUrl = match.rawUrl;
-
-    if (markdownLabel && markdownUrl) {
-      nodes.push(
-        <a
-          key={`link-${lineIndex}-${start}`}
-          href={markdownUrl}
-          target="_blank"
-          rel="noreferrer"
-          className={isUser ? "underline underline-offset-2 text-white" : "underline underline-offset-2 text-sky-700"}
-        >
-          {markdownLabel}
-        </a>
-      );
-    } else if (rawUrl) {
-      const trimmedUrl = trimTrailingPunctuation(rawUrl);
-      const trailing = rawUrl.slice(trimmedUrl.length);
-      nodes.push(
-        <a
-          key={`link-${lineIndex}-${start}`}
-          href={trimmedUrl}
-          target="_blank"
-          rel="noreferrer"
-          className={isUser ? "underline underline-offset-2 text-white" : "underline underline-offset-2 text-sky-700"}
-        >
-          {trimmedUrl}
-        </a>
-      );
-      if (trailing) {
-        nodes.push(trailing);
-      }
-    }
-
-    lastIndex = start + raw.length;
+    appendTextSegment(nodes, text, lastIndex, match.start);
+    nodes.push(...buildLinkNodes(match, isUser));
+    lastIndex = match.start + match.raw.length;
   }
 
   if (lastIndex < text.length) {
@@ -132,46 +96,26 @@ function findLinks(text: string): LinkMatch[] {
       nextBracket !== -1 && (nextHttp === -1 || nextBracket < nextHttp);
 
     if (useBracket) {
-      const labelEnd = text.indexOf("]", nextBracket + 1);
-      if (labelEnd !== -1 && text[labelEnd + 1] === "(") {
-        const urlStart = labelEnd + 2;
-        if (
-          text.startsWith("http://", urlStart) ||
-          text.startsWith("https://", urlStart)
-        ) {
-          const urlEnd = text.indexOf(")", urlStart);
-          if (urlEnd !== -1) {
-            const markdownLabel = text.slice(nextBracket + 1, labelEnd);
-            const markdownUrl = text.slice(urlStart, urlEnd);
-            if (markdownLabel && markdownUrl) {
-              matches.push({
-                start: nextBracket,
-                raw: text.slice(nextBracket, urlEnd + 1),
-                markdownLabel,
-                markdownUrl,
-              });
-              index = urlEnd + 1;
-              continue;
-            }
-          }
-        }
+      const parsed = parseMarkdownLink(text, nextBracket);
+      if (parsed) {
+        matches.push(parsed.match);
+        index = parsed.nextIndex;
+      } else {
+        index = nextBracket + 1;
       }
-
-      index = nextBracket + 1;
       continue;
     }
 
     if (nextHttp !== -1) {
-      const urlEnd = findUrlEnd(text, nextHttp);
-      if (urlEnd > nextHttp) {
-        const rawUrl = text.slice(nextHttp, urlEnd);
-        matches.push({ start: nextHttp, raw: rawUrl, rawUrl });
-        index = urlEnd;
+      const parsed = parseRawUrl(text, nextHttp);
+      if (parsed) {
+        matches.push(parsed.match);
+        index = parsed.nextIndex;
         continue;
       }
     }
 
-    index += 1;
+    index = Math.max(nextHttp, nextBracket) + 1;
   }
 
   return matches;
@@ -194,8 +138,12 @@ function findNextHttp(text: string, fromIndex: number) {
 
 function findUrlEnd(text: string, startIndex: number) {
   let index = startIndex;
-  while (index < text.length && !isWhitespace(text.charCodeAt(index))) {
-    index += 1;
+  while (index < text.length) {
+    const codePoint = text.codePointAt(index) ?? 0;
+    if (isWhitespace(codePoint)) {
+      break;
+    }
+    index += codePoint > 0xffff ? 2 : 1;
   }
   return index;
 }
@@ -214,20 +162,135 @@ function isWhitespace(charCode: number) {
 function trimTrailingPunctuation(url: string) {
   let end = url.length;
   while (end > 0) {
-    const charCode = url.charCodeAt(end - 1);
-    const isPunctuation =
-      charCode === 0x29 || // )
-      charCode === 0x2c || // ,
-      charCode === 0x2e || // .
-      charCode === 0x21 || // !
-      charCode === 0x3f || // ?
-      charCode === 0x3a || // :
-      charCode === 0x3b; // ;
+    const charCode = url.codePointAt(end - 1) ?? 0;
+    const isPunctuation = isTrailingPunctuation(charCode);
     if (!isPunctuation) {
       break;
     }
-    end -= 1;
+    end -= charCode > 0xffff ? 2 : 1;
   }
 
   return end === url.length ? url : url.slice(0, end);
+}
+
+function buildLineKey(line: string, offset: number) {
+  const trimmed = line.trim();
+  if (!trimmed) {
+    return `line-${offset}-empty`;
+  }
+  return `line-${offset}-${trimmed}`;
+}
+
+function appendTextSegment(
+  nodes: Array<string | React.JSX.Element>,
+  text: string,
+  start: number,
+  end: number
+) {
+  if (end > start) {
+    nodes.push(text.slice(start, end));
+  }
+}
+
+function buildLinkNodes(match: LinkMatch, isUser: boolean) {
+  if (match.markdownLabel && match.markdownUrl) {
+    return [
+      buildAnchor(match.markdownUrl, match.markdownLabel, isUser, match.start),
+    ];
+  }
+
+  if (match.rawUrl) {
+    const trimmedUrl = trimTrailingPunctuation(match.rawUrl);
+    const trailing = match.rawUrl.slice(trimmedUrl.length);
+    const nodes: Array<string | React.JSX.Element> = [
+      buildAnchor(trimmedUrl, trimmedUrl, isUser, match.start),
+    ];
+    if (trailing) {
+      nodes.push(trailing);
+    }
+    return nodes;
+  }
+
+  return [];
+}
+
+function buildAnchor(href: string, label: string, isUser: boolean, start: number) {
+  return (
+    <a
+      key={`link-${start}-${href}`}
+      href={href}
+      target="_blank"
+      rel="noreferrer"
+      className={linkClassName(isUser)}
+    >
+      {label}
+    </a>
+  );
+}
+
+function linkClassName(isUser: boolean) {
+  return isUser
+    ? "underline underline-offset-2 text-white"
+    : "underline underline-offset-2 text-sky-700";
+}
+
+function parseMarkdownLink(text: string, start: number) {
+  const labelEnd = text.indexOf("]", start + 1);
+  if (labelEnd === -1 || text[labelEnd + 1] !== "(") {
+    return null;
+  }
+
+  const urlStart = labelEnd + 2;
+  if (!startsWithHttp(text, urlStart)) {
+    return null;
+  }
+
+  const urlEnd = text.indexOf(")", urlStart);
+  if (urlEnd === -1) {
+    return null;
+  }
+
+  const markdownLabel = text.slice(start + 1, labelEnd);
+  const markdownUrl = text.slice(urlStart, urlEnd);
+  if (!markdownLabel || !markdownUrl) {
+    return null;
+  }
+
+  return {
+    match: {
+      start,
+      raw: text.slice(start, urlEnd + 1),
+      markdownLabel,
+      markdownUrl,
+    },
+    nextIndex: urlEnd + 1,
+  };
+}
+
+function parseRawUrl(text: string, start: number) {
+  const urlEnd = findUrlEnd(text, start);
+  if (urlEnd <= start) {
+    return null;
+  }
+  const rawUrl = text.slice(start, urlEnd);
+  return {
+    match: { start, raw: rawUrl, rawUrl },
+    nextIndex: urlEnd,
+  };
+}
+
+function startsWithHttp(text: string, index: number) {
+  return text.startsWith("http://", index) || text.startsWith("https://", index);
+}
+
+function isTrailingPunctuation(charCode: number) {
+  return (
+    charCode === 0x29 ||
+    charCode === 0x2c ||
+    charCode === 0x2e ||
+    charCode === 0x21 ||
+    charCode === 0x3f ||
+    charCode === 0x3a ||
+    charCode === 0x3b
+  );
 }
