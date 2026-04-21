@@ -8,7 +8,12 @@ FROM node:20-alpine AS build
 WORKDIR /app
 
 COPY --from=deps /app/node_modules ./node_modules
-COPY . .
+COPY app ./app
+COPY components ./components
+COPY lib ./lib
+COPY public ./public
+COPY next.config.ts tsconfig.json next-env.d.ts postcss.config.mjs eslint.config.mjs ./
+COPY package.json package-lock.json ./
 RUN npm run build
 
 FROM node:20-alpine AS runner
