@@ -17,10 +17,7 @@ jobs:
       - name: Release Please
         uses: googleapis/release-please-action@v4
         with:
-          # If your repo disables "Allow GitHub Actions to create and approve pull requests",
-          # the default GITHUB_TOKEN cannot open the Release Please PR.
-          # Create a fine-grained PAT with Contents + Pull requests (read/write),
-          # save it as a repository secret named RELEASE_PLEASE_TOKEN, and use it here.
-          token: ${{ secrets.RELEASE_PLEASE_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
+
