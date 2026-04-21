@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   title: "TripBites | Destination Intelligence",
   description: "TripBites provides destination briefings grounded in weather conditions, local developments, and practical travel impact.",
   icons: {
-    icon: "/smart-news-logo.svg",
+    icon: "/tripbites-logo.svg",
   },
 };
 
