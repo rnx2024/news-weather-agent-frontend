@@ -89,6 +89,7 @@ Run (example):
     </td>
   </tr>
 </table>
+
 ## Releases (automated)
 
 This repo uses Release Please.
