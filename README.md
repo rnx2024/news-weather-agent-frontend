@@ -79,6 +79,10 @@ Run (example):
 
 ![TripBites Chat](https://raw.githubusercontent.com/rnx2024/tripbites/main/public/chatbox.png)
 
+### Disruption Analysis
+
+![TripBites_Analysis](https://github.com/rnx2024/tripbites/blob/main/public/disruption-analysis.png)
+
 
 ## Releases (automated)
 
