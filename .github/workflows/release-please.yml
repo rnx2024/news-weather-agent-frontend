@@ -14,10 +14,22 @@ jobs:
   release-please:
     runs-on: ubuntu-latest
     steps:
+      - name: Ensure RELEASE_PLEASE_TOKEN is configured
+        shell: bash
+        env:
+          RELEASE_PLEASE_TOKEN: ${{ secrets.RELEASE_PLEASE_TOKEN }}
+        run: |
+          if [ -z "$RELEASE_PLEASE_TOKEN" ]; then
+            echo "::error::Missing secret RELEASE_PLEASE_TOKEN."
+            echo "::error::This repo blocks PR creation with the default GitHub Actions token."
+            echo "::error::Fix: create a fine-grained PAT (repo-scoped) with Contents+Pull requests read/write and add it as an Actions secret named RELEASE_PLEASE_TOKEN."
+            exit 1
+          fi
+
       - name: Release Please
         uses: googleapis/release-please-action@v4
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.RELEASE_PLEASE_TOKEN }}
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
 
