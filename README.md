@@ -80,18 +80,17 @@ Run (example):
 <table>
   <tr>
     <td align="center" width="50%">
-      <img src="https://raw.githubusercontent.com/rnx2024/tripbites/main/public/chatbox.png" alt="TripBites Chat" width="100%" />
-      <br />
       <strong>Chat Interface</strong>
+      <br />
+      <img src="https://raw.githubusercontent.com/rnx2024/tripbites/main/public/chatbox.png" alt="TripBites Chat" width="100%" />
     </td>
     <td align="center" width="50%">
-      <img src="https://raw.githubusercontent.com/rnx2024/tripbites/main/public/disruption-analysis.png" alt="TripBites Analysis" width="100%" />
-      <br />
       <strong>Disruption Analysis</strong>
+      <br />
+      <img src="https://raw.githubusercontent.com/rnx2024/tripbites/main/public/disruption-analysis.png" alt="Disruption Analysis" width="100%" />
     </td>
   </tr>
 </table>
-
 
 ## Releases (automated)
 
