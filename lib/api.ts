@@ -1,4 +1,6 @@
 // lib/api.ts
+import { throwIfNotOk } from "./apiError";
+
 export type ChatSource = {
   type: string;
 };
@@ -20,10 +22,7 @@ export async function chatRequest(place: string, question: string) {
     body: JSON.stringify({ place, question }),
   });
 
-  if (!res.ok) {
-    const text = await res.text().catch(() => "");
-    throw new Error(`API error ${res.status}: ${text || res.statusText}`);
-  }
+  await throwIfNotOk(res);
 
   return res.json() as Promise<ChatResponse>;
 }
@@ -33,10 +32,7 @@ export async function weatherRequest(place: string) {
     method: "GET",
   });
 
-  if (!res.ok) {
-    const text = await res.text().catch(() => "");
-    throw new Error(`API error ${res.status}: ${text || res.statusText}`);
-  }
+  await throwIfNotOk(res);
 
   return res.json() as Promise<{
     place: string;
@@ -58,10 +54,7 @@ export async function newsRequest(place: string) {
     method: "GET",
   });
 
-  if (!res.ok) {
-    const text = await res.text().catch(() => "");
-    throw new Error(`API error ${res.status}: ${text || res.statusText}`);
-  }
+  await throwIfNotOk(res);
 
   return res.json() as Promise<{
     place: string;
