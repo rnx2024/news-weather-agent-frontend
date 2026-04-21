@@ -77,21 +77,18 @@ Run (example):
 
 ### Chat Interface
 
-<table>
+<table width="100%">
   <tr>
-    <td align="center" width="50%">
-      <strong>Chat Interface</strong>
-      <br />
+    <td align="center" width="50%" valign="top">
+      <strong>Chat Interface</strong><br /><br />
       <img src="https://raw.githubusercontent.com/rnx2024/tripbites/main/public/chatbox.png" alt="TripBites Chat" width="100%" />
     </td>
-    <td align="center" width="50%">
-      <strong>Disruption Analysis</strong>
-      <br />
+    <td align="center" width="50%" valign="top">
+      <strong>Disruption Analysis</strong><br /><br />
       <img src="https://raw.githubusercontent.com/rnx2024/tripbites/main/public/disruption-analysis.png" alt="Disruption Analysis" width="100%" />
     </td>
   </tr>
 </table>
-
 ## Releases (automated)
 
 This repo uses Release Please.
