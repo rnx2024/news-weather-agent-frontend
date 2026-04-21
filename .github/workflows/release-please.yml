@@ -27,7 +27,9 @@ jobs:
           fi
 
       - name: Release Please
-        uses: googleapis/release-please-action@v4
+        # Pin to a full commit SHA for supply-chain security.
+        # This SHA corresponds to the `v4` tag in googleapis/release-please-action.
+        uses: googleapis/release-please-action@16a9c90856f42705d54a6fda1823352bdc62cf38
         with:
           token: ${{ secrets.RELEASE_PLEASE_TOKEN }}
           config-file: release-please-config.json
