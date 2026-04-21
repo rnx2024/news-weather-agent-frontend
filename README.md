@@ -77,11 +77,20 @@ Run (example):
 
 ### Chat Interface
 
-![TripBites Chat](https://raw.githubusercontent.com/rnx2024/tripbites/main/public/chatbox.png)
-
-### Disruption Analysis
-
-![TripBites_Analysis](https://github.com/rnx2024/tripbites/blob/main/public/disruption-analysis.png)
+<table>
+  <tr>
+    <td align="center" width="50%">
+      <img src="https://raw.githubusercontent.com/rnx2024/tripbites/main/public/chatbox.png" alt="TripBites Chat" width="100%" />
+      <br />
+      <strong>Chat Interface</strong>
+    </td>
+    <td align="center" width="50%">
+      <img src="https://raw.githubusercontent.com/rnx2024/tripbites/main/public/disruption-analysis.png" alt="TripBites Analysis" width="100%" />
+      <br />
+      <strong>Disruption Analysis</strong>
+    </td>
+  </tr>
+</table>
 
 
 ## Releases (automated)
