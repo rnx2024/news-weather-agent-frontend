@@ -19,7 +19,7 @@ export default function Home() {
           {/* Header with logo */}
           <header className="mb-4 flex items-center gap-4">
             <Image
-              src="/smart-news-logo.svg"
+              src="/tripbites-logo.svg"
               alt="TripBites Logo"
               width={48}
               height={48}
