@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.2.0](https://github.com/rnx2024/tripbites/compare/v0.1.1...v0.2.0) (2026-07-25)
+
+
+### Features
+
+* add-Zod-validation-and-tests ([c3da772](https://github.com/rnx2024/tripbites/commit/c3da772b70492bf1278f26c04006f0a16087d1e2))
+
+
+### Bug Fixes
+
+* allow-SVG-via-next-image ([b135e4a](https://github.com/rnx2024/tripbites/commit/b135e4ae1010a45a589ee5fbd096f0d1ac9c8df7))
+* exclude CHANGELOG.md from Prettier and group Dependabot PRs ([f29af22](https://github.com/rnx2024/tripbites/commit/f29af22b6d9f37e2fa2693f86eeefecc68dfb7dc))
+* exclude CHANGELOG.md from Prettier and group Dependabot PRs ([56d5f3d](https://github.com/rnx2024/tripbites/commit/56d5f3dff68270499d7af29ec3347213ff59ebb5))
+* imports ([5006ee6](https://github.com/rnx2024/tripbites/commit/5006ee6ed0eb59b4b05026d5bd89e75723dd3da9))
+* logo-display ([9ba5f43](https://github.com/rnx2024/tripbites/commit/9ba5f4390fecc35cdad6f61a0532119d69f9ac0a))
+
 ## [0.1.1](https://github.com/rnx2024/tripbites/compare/v0.1.0...v0.1.1) (2026-04-21)
 
 
