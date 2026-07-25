@@ -3,8 +3,7 @@ import { getServerConfig, type ServerConfig } from "./config";
 import { fetchWithTimeout, jsonError } from "./http";
 
 export type ConfigOrResponse =
-  | { ok: true; value: ServerConfig }
-  | { ok: false; response: Response };
+  { ok: true; value: ServerConfig } | { ok: false; response: Response };
 
 export function requireServerConfig(): ConfigOrResponse {
   const cfg = getServerConfig();
@@ -23,8 +22,7 @@ export function requireServerConfig(): ConfigOrResponse {
 }
 
 export type FetchOrResponse =
-  | { ok: true; response: Response }
-  | { ok: false; response: Response };
+  { ok: true; response: Response } | { ok: false; response: Response };
 
 export async function fetchBackend(
   cfg: ServerConfig,
@@ -69,4 +67,3 @@ export async function passthrough(upstream: Response): Promise<NextResponse> {
     },
   });
 }
-

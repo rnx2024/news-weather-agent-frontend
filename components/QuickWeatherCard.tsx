@@ -46,7 +46,8 @@ export default function QuickWeatherCard() {
           Near-term conditions for local movement
         </h2>
         <p className="mt-1 text-[0.95rem] leading-6 text-slate-600">
-          Review weather conditions that may affect transfers, outdoor plans, and short day trips.
+          Review weather conditions that may affect transfers, outdoor plans,
+          and short day trips.
         </p>
       </div>
 
@@ -72,7 +73,11 @@ export default function QuickWeatherCard() {
         {!error && summary && (
           <div className="space-y-2">
             <p className="whitespace-pre-line">{summary}</p>
-            {travelRelevance && <p className="text-[0.95rem] leading-6 text-slate-500">{travelRelevance}</p>}
+            {travelRelevance && (
+              <p className="text-[0.95rem] leading-6 text-slate-500">
+                {travelRelevance}
+              </p>
+            )}
             {travelAdvice.length > 0 && (
               <ul className="space-y-1 text-[0.95rem] leading-6 text-slate-600">
                 {travelAdvice.map((item) => (
@@ -83,7 +88,9 @@ export default function QuickWeatherCard() {
           </div>
         )}
         {!error && !summary && !loading && (
-          <p className="text-[0.95rem] leading-6 text-slate-400">No weather outlook requested yet.</p>
+          <p className="text-[0.95rem] leading-6 text-slate-400">
+            No weather outlook requested yet.
+          </p>
         )}
       </div>
     </section>

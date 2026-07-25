@@ -5,10 +5,12 @@ TripBites is a Next.js (App Router) frontend for a travel intelligence app. User
 ## Local setup
 
 Prereqs:
+
 - Node.js 20+
 - npm (lockfile-driven installs via `npm ci`)
 
 Steps:
+
 1. Install dependencies: `npm ci`
 2. Create local env file: copy `.env.example` to `.env.local` and fill in real values
 3. Start dev server: `npm run dev`
@@ -19,14 +21,17 @@ Steps:
 The browser never calls third-party services directly.
 
 Instead it calls Next.js API routes in this frontend:
+
 - `POST /api/chat`
 - `GET /api/weather?place=...`
 - `GET /api/news?place=...`
 
 Those API routes run server-side and forward requests to the backend with:
+
 - `x-api-key: EXTERNAL_API_KEY`
 
 Chat also uses a backend session:
+
 - `POST /api/chat` creates/refreshes a backend session and stores it in HttpOnly cookies: `tb_sid`, `tb_stk`
 - Those cookies are then sent by the browser on subsequent chat requests
 
@@ -64,9 +69,11 @@ Set the same environment variables from `.env.example` in your Vercel project se
 ### Docker
 
 Build:
+
 - `docker build -t tripbites-frontend .`
 
 Run (example):
+
 - `docker run --rm -p 3000:3000 --env-file .env.local tripbites-frontend`
 
 ## Screenshots

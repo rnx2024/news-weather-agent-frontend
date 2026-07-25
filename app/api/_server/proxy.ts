@@ -22,4 +22,3 @@ export async function proxyPlaceGet(req: Request, endpointPath: string) {
 
   return passthrough(upstream.response);
 }
-

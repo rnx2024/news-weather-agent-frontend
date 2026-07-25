@@ -11,7 +11,12 @@ export class ApiError extends Error {
   public readonly code?: string;
   public readonly details?: unknown;
 
-  constructor(args: { status: number; message: string; code?: string; details?: unknown }) {
+  constructor(args: {
+    status: number;
+    message: string;
+    code?: string;
+    details?: unknown;
+  }) {
     super(args.message);
     this.name = "ApiError";
     this.status = args.status;
@@ -36,8 +41,7 @@ export async function throwIfNotOk(res: Response) {
     const data = (await tryReadJson(res)) as ApiErrorPayload | null;
     const code = data?.error?.code;
     const message =
-      data?.error?.message ??
-      `Request failed with status ${res.status}.`;
+      data?.error?.message ?? `Request failed with status ${res.status}.`;
     throw new ApiError({
       status: res.status,
       code,
@@ -51,4 +55,3 @@ export async function throwIfNotOk(res: Response) {
     message: `Request failed with status ${res.status}.`,
   });
 }
-

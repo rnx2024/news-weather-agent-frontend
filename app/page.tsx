@@ -15,7 +15,6 @@ export default function Home() {
         </div>
 
         <div className="rounded-2xl bg-white p-8 shadow-md ring-1 ring-slate-100 space-y-6">
-          
           {/* Header with logo */}
           <header className="mb-4 flex items-center gap-4">
             <Image
@@ -40,7 +39,8 @@ export default function Home() {
                 className="max-w-2xl text-[1.02rem] font-normal leading-7"
                 style={{ color: "#2a4157ff" }}
               >
-                Destination briefings grounded in weather, local developments, and practical travel impact.
+                Destination briefings grounded in weather, local developments,
+                and practical travel impact.
               </p>
             </div>
           </header>
