@@ -48,11 +48,24 @@ export async function fetchBackend(
 }
 
 export async function passthrough(upstream: Response): Promise<NextResponse> {
+  const contentType = upstream.headers.get("content-type") ?? "";
+
+  // The backend is a JSON-only API. If it (or an intermediary, e.g. a
+  // suspended-host page) ever returns a non-JSON body, don't forward it
+  // verbatim — normalize it into the app's own clean error shape instead.
+  if (!contentType.includes("application/json")) {
+    return jsonError(
+      upstream.ok ? 502 : upstream.status,
+      "UPSTREAM_ERROR",
+      "Backend returned an unexpected response."
+    );
+  }
+
   const text = await upstream.text();
   return new NextResponse(text, {
     status: upstream.status,
     headers: {
-      "Content-Type": upstream.headers.get("content-type") ?? "application/json",
+      "Content-Type": contentType,
     },
   });
 }

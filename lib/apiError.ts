@@ -28,14 +28,6 @@ async function tryReadJson(res: Response): Promise<unknown> {
   }
 }
 
-async function tryReadText(res: Response): Promise<string> {
-  try {
-    return await res.text();
-  } catch {
-    return "";
-  }
-}
-
 export async function throwIfNotOk(res: Response) {
   if (res.ok) return;
 
@@ -54,10 +46,9 @@ export async function throwIfNotOk(res: Response) {
     });
   }
 
-  const text = await tryReadText(res);
   throw new ApiError({
     status: res.status,
-    message: text ? `Request failed: ${text}` : `Request failed with status ${res.status}.`,
+    message: `Request failed with status ${res.status}.`,
   });
 }
 
