@@ -13,10 +13,16 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
-      - run: npm ci
+      # --ignore-scripts blocks arbitrary lifecycle scripts from untrusted/unreviewed
+      # dependencies; sharp and unrs-resolver are the two reviewed packages that
+      # genuinely need their install scripts (native binaries), so they're
+      # rebuilt explicitly right after.
+      - run: npm ci --ignore-scripts
+      - run: npm rebuild sharp unrs-resolver
       - run: npm run lint
+      - run: npm run format:check
+      - run: npm run typecheck
       - run: npm test
       - run: npm run build
-

@@ -34,10 +34,12 @@ export default function QuickNewsCard() {
 
     try {
       const res = await newsRequest(trimmed);
-      const normalized: NewsItem[] = (res.items ?? []).map((it: Omit<NewsItem, "id">) => ({
-        ...it,
-        id: crypto.randomUUID(),
-      }));
+      const normalized: NewsItem[] = (res.items ?? []).map(
+        (it: Omit<NewsItem, "id">) => ({
+          ...it,
+          id: crypto.randomUUID(),
+        })
+      );
       setItems(normalized);
       setTravelRelevance(res.travel_relevance ?? null);
       setNote(res.note ?? null);
@@ -51,12 +53,15 @@ export default function QuickNewsCard() {
   return (
     <section className="rounded-2xl border border-slate-200 bg-sky-100 p-4 shadow-md space-y-3">
       <div>
-        <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-sky-700">Local Developments</p>
+        <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-sky-700">
+          Local Developments
+        </p>
         <h2 className="mt-1 text-[1.05rem] font-medium leading-6 tracking-tight text-slate-900">
           Recent reporting relevant to travel conditions
         </h2>
         <p className="mt-1 text-[0.95rem] leading-6 text-slate-600">
-          Surface recent developments that may affect transit, access, or local plans.
+          Surface recent developments that may affect transit, access, or local
+          plans.
         </p>
       </div>
 
@@ -85,23 +90,39 @@ export default function QuickNewsCard() {
             <ul className="space-y-1">
               {items.slice(0, 3).map((item) => (
                 <li key={item.id} className="leading-snug">
-                  <span className="font-medium text-slate-800">{item.title}</span>
-                  {item.source && <span className="text-slate-500"> · {item.source}</span>}
-                  {item.date && <span className="text-slate-400"> · {item.date}</span>}
+                  <span className="font-medium text-slate-800">
+                    {item.title}
+                  </span>
+                  {item.source && (
+                    <span className="text-slate-500"> · {item.source}</span>
+                  )}
+                  {item.date && (
+                    <span className="text-slate-400"> · {item.date}</span>
+                  )}
                 </li>
               ))}
             </ul>
-            {travelRelevance && <p className="text-[0.95rem] leading-6 text-slate-500">{travelRelevance}</p>}
-            {note && <p className="text-[0.95rem] leading-6 text-slate-400">{note}</p>}
+            {travelRelevance && (
+              <p className="text-[0.95rem] leading-6 text-slate-500">
+                {travelRelevance}
+              </p>
+            )}
+            {note && (
+              <p className="text-[0.95rem] leading-6 text-slate-400">{note}</p>
+            )}
           </div>
         )}
 
         {!error && items?.length === 0 && !loading && (
-          <p className="text-[0.95rem] leading-6 text-slate-400">No recent local developments were returned.</p>
+          <p className="text-[0.95rem] leading-6 text-slate-400">
+            No recent local developments were returned.
+          </p>
         )}
 
         {!error && !items && !loading && (
-          <p className="text-[0.95rem] leading-6 text-slate-400">No local developments requested yet.</p>
+          <p className="text-[0.95rem] leading-6 text-slate-400">
+            No local developments requested yet.
+          </p>
         )}
       </div>
     </section>

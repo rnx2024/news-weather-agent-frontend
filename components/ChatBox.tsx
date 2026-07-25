@@ -123,7 +123,8 @@ export default function ChatBox() {
       <section className="rounded-2xl border border-slate-300 bg-blue-50 p-5 shadow-inner ring-1 ring-slate-200 h-80 overflow-y-auto space-y-3">
         {messages.length === 0 && (
           <p className="text-[1rem] leading-7 text-slate-500">
-            Request a destination brief, current disruptions, weather impact, or practical planning guidance for the selected location.
+            Request a destination brief, current disruptions, weather impact, or
+            practical planning guidance for the selected location.
           </p>
         )}
         {messages.map((m) => (

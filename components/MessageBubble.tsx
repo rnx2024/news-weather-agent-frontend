@@ -20,9 +20,13 @@ type LinkStep = {
   nextIndex: number;
 };
 
-export default function MessageBubble(
-  { role, text, riskLevel, travelAdvice, sources }: Readonly<Props>
-) {
+export default function MessageBubble({
+  role,
+  text,
+  riskLevel,
+  travelAdvice,
+  sources,
+}: Readonly<Props>) {
   const isUser = role === "user";
 
   return (
@@ -225,7 +229,12 @@ function buildLinkNodes(match: LinkMatch, isUser: boolean) {
   return [];
 }
 
-function buildAnchor(href: string, label: string, isUser: boolean, start: number) {
+function buildAnchor(
+  href: string,
+  label: string,
+  isUser: boolean,
+  start: number
+) {
   return (
     <a
       key={`link-${start}-${href}`}
@@ -291,7 +300,9 @@ function parseRawUrl(text: string, start: number) {
 }
 
 function startsWithHttp(text: string, index: number) {
-  return text.startsWith("http://", index) || text.startsWith("https://", index);
+  return (
+    text.startsWith("http://", index) || text.startsWith("https://", index)
+  );
 }
 
 function isTrailingPunctuation(charCode: number) {

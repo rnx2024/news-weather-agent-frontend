@@ -1,4 +1,5 @@
 import { cookies } from "next/headers";
+import { z } from "zod";
 import type { ServerConfig } from "../_server/config";
 import { jsonError } from "../_server/http";
 import {
@@ -7,6 +8,7 @@ import {
   requireServerConfig,
   type FetchOrResponse,
 } from "../_server/upstream";
+import { ChatRequestSchema } from "../../../lib/schemas";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -15,8 +17,7 @@ type Session = { session_id: string; session_token: string };
 const isProduction = process.env.NODE_ENV === "production";
 
 type SessionOrResponse =
-  | { ok: true; value: Session }
-  | { ok: false; response: Response };
+  { ok: true; value: Session } | { ok: false; response: Response };
 
 async function createSession(cfg: ServerConfig): Promise<SessionOrResponse> {
   const upstream = await fetchBackend(cfg, `${cfg.backendUrl}/session`, {
@@ -48,12 +49,23 @@ export async function POST(req: Request) {
   const cfg = requireServerConfig();
   if (!cfg.ok) return cfg.response;
 
-  let body: unknown;
+  let rawBody: unknown;
   try {
-    body = await req.json();
+    rawBody = await req.json();
   } catch {
     return jsonError(400, "BAD_REQUEST", "Invalid JSON body.");
   }
+
+  const parsedBody = ChatRequestSchema.safeParse(rawBody);
+  if (!parsedBody.success) {
+    return jsonError(
+      400,
+      "BAD_REQUEST",
+      "Invalid request body.",
+      z.treeifyError(parsedBody.error)
+    );
+  }
+  const body = parsedBody.data;
 
   // ---- read session from request cookies (await cookies())
   const jar = await cookies();

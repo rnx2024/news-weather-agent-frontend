@@ -8,22 +8,33 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
-    "test": "npm run typecheck"
+    "test": "vitest run",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "dependencies": {
     "next": "^16.0.10",
     "react": "^19.2.3",
-    "react-dom": "^19.2.3"
+    "react-dom": "^19.2.3",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@testing-library/jest-dom": "^7.0.0",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.1",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@vitejs/plugin-react": "^6.0.4",
     "baseline-browser-mapping": "^2.10.12",
     "eslint": "^9",
     "eslint-config-next": "16.0.8",
+    "eslint-config-prettier": "^10.1.8",
+    "jsdom": "^29.1.1",
+    "prettier": "^3.9.6",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^4.1.10"
   }
 }
