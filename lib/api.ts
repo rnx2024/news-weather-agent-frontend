@@ -5,12 +5,11 @@ import {
   NewsResponseSchema,
   WeatherResponseSchema,
   type ChatResponse,
-  type NewsResponse,
-  type WeatherResponse,
 } from "./schemas";
 import { z } from "zod";
 
-export type { ChatResponse, NewsResponse, WeatherResponse };
+export type { ChatResponse };
+export type { NewsResponse, WeatherResponse } from "./schemas";
 export type ChatSource = ChatResponse["sources"][number];
 
 function parseOrThrow<T>(schema: z.ZodType<T>, data: unknown): T {
