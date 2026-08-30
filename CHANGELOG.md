@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.2.1](https://github.com/rnx2024/tripbites/compare/v0.2.0...v0.2.1) (2026-08-30)
+
+
+### Bug Fixes
+
+* code-complexity ([8c617d6](https://github.com/rnx2024/tripbites/commit/8c617d672bb35ad1a38e37cc68b71d8fb541eff1))
+* **format:** preserve repository line endings ([8cfb84c](https://github.com/rnx2024/tripbites/commit/8cfb84cca2f275e48e4a4b81811d34021463c157))
+* **format:** preserve repository line endings ([b3ca152](https://github.com/rnx2024/tripbites/commit/b3ca15250afb84e53942e66eaffb2fe8f0010d32))
+* input-limits-error-handling ([8dbc90e](https://github.com/rnx2024/tripbites/commit/8dbc90e907f08c65aaa485499f744926cbc1cf92))
+* input-limits-error-handling ([9560681](https://github.com/rnx2024/tripbites/commit/95606816ac165da93e74d188821ee47208712ba2))
+
 ## [0.2.0](https://github.com/rnx2024/tripbites/compare/v0.1.1...v0.2.0) (2026-07-25)
 
 
