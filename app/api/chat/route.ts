@@ -8,7 +8,11 @@ import {
   requireServerConfig,
   type FetchOrResponse,
 } from "../_server/upstream";
-import { ChatRequestSchema } from "../../../lib/schemas";
+import {
+  ChatRequestSchema,
+  MAX_REQUEST_BODY_BYTES,
+  SessionResponseSchema,
+} from "../../../lib/schemas";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -39,9 +43,20 @@ async function createSession(cfg: ServerConfig): Promise<SessionOrResponse> {
   }
 
   const data = await upstream.response.json();
+  const parsed = SessionResponseSchema.safeParse(data);
+  if (!parsed.success) {
+    return {
+      ok: false,
+      response: jsonError(
+        502,
+        "UPSTREAM_SESSION_INVALID",
+        "Backend returned an invalid session response."
+      ),
+    };
+  }
   return {
     ok: true,
-    value: { session_id: data.session_id, session_token: data.session_token },
+    value: parsed.data,
   };
 }
 
@@ -49,20 +64,44 @@ export async function POST(req: Request) {
   const cfg = requireServerConfig();
   if (!cfg.ok) return cfg.response;
 
+  const contentLength = Number(req.headers.get("content-length") ?? "");
+  if (
+    Number.isFinite(contentLength) &&
+    contentLength > MAX_REQUEST_BODY_BYTES
+  ) {
+    return jsonError(
+      413,
+      "REQUEST_TOO_LARGE",
+      "Request is too large. Please shorten your message."
+    );
+  }
+
   let rawBody: unknown;
   try {
-    rawBody = await req.json();
+    const rawText = await req.text();
+    if (new TextEncoder().encode(rawText).byteLength > MAX_REQUEST_BODY_BYTES) {
+      return jsonError(
+        413,
+        "REQUEST_TOO_LARGE",
+        "Request is too large. Please shorten your message."
+      );
+    }
+    rawBody = JSON.parse(rawText) as unknown;
   } catch {
     return jsonError(400, "BAD_REQUEST", "Invalid JSON body.");
   }
 
   const parsedBody = ChatRequestSchema.safeParse(rawBody);
   if (!parsedBody.success) {
+    const issue = parsedBody.error.issues[0];
+    const field = issue?.path[0];
     return jsonError(
-      400,
-      "BAD_REQUEST",
-      "Invalid request body.",
-      z.treeifyError(parsedBody.error)
+      422,
+      "VALIDATION_ERROR",
+      "Please correct the highlighted fields.",
+      field
+        ? { [String(field)]: issue.message }
+        : z.treeifyError(parsedBody.error)
     );
   }
   const body = parsedBody.data;

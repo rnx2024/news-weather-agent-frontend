@@ -1,8 +1,15 @@
 // components/ChatBox.tsx
 "use client";
 
-import { chatRequest, type ChatResponse } from "../lib/api";
+import { chatRequest } from "../lib/api";
+import { ApiError } from "../lib/apiError";
 import { getErrorMessage } from "../lib/errors";
+import {
+  ChatRequestSchema,
+  MAX_PLACE_LENGTH,
+  MAX_QUESTION_LENGTH,
+  type ChatResponse,
+} from "../lib/schemas";
 import { useState, type KeyboardEvent } from "react";
 import MessageBubble from "./MessageBubble";
 import LoadingDots from "./LoadingDots";
@@ -29,17 +36,34 @@ export default function ChatBox() {
   const [messages, setMessages] = useState<Msg[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [inputError, setInputError] = useState<string | null>(null);
 
   async function send(question?: string) {
     const q = (question ?? input).trim();
     if (!q) return;
+
+    const parsedRequest = ChatRequestSchema.safeParse({ place, question: q });
+    if (!parsedRequest.success) {
+      const field = parsedRequest.error.issues[0]?.path[0];
+      setInputError(
+        field === "place"
+          ? `Destination must be between 1 and ${MAX_PLACE_LENGTH} characters.`
+          : `Your question is too long. Please keep it under ${MAX_QUESTION_LENGTH.toLocaleString()} characters.`
+      );
+      return;
+    }
+
+    setInputError(null);
 
     const userMsg: Msg = { id: crypto.randomUUID(), role: "user", text: q };
     setMessages((m) => [...m, userMsg]);
     setLoading(true);
 
     try {
-      const res = await chatRequest(place, q);
+      const res = await chatRequest(
+        parsedRequest.data.place,
+        parsedRequest.data.question ?? ""
+      );
       const assistant = formatAssistantMessage(res);
       const botMsg: Msg = {
         id: crypto.randomUUID(),
@@ -51,6 +75,16 @@ export default function ChatBox() {
       };
       setMessages((m) => [...m, botMsg]);
     } catch (error: unknown) {
+      if (
+        error instanceof ApiError &&
+        (error.code === "VALIDATION_ERROR" ||
+          error.code === "REQUEST_TOO_LARGE")
+      ) {
+        const details = error.details as
+          { place?: string; question?: string } | undefined;
+        setInputError(details?.question ?? details?.place ?? error.message);
+        return;
+      }
       const errMsg: Msg = {
         id: crypto.randomUUID(),
         role: "assistant",
@@ -113,6 +147,7 @@ export default function ChatBox() {
         <input
           id="city"
           className="mt-3 w-full rounded-md border border-slate-300 bg-white px-3 py-2.5 text-base font-normal text-slate-800 focus:border-[#3399FF] focus:outline-none focus:ring-1 focus:ring-[#3399FF]"
+          maxLength={MAX_PLACE_LENGTH}
           value={place}
           onChange={(e) => setPlace(e.target.value)}
           placeholder="Enter a city or destination"
@@ -155,7 +190,8 @@ export default function ChatBox() {
               key={q}
               type="button"
               onClick={() => void send(q)}
-              className="rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-medium leading-6 text-slate-700 shadow-sm hover:bg-slate-100 hover:border-slate-400"
+              disabled={loading}
+              className="rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-medium leading-6 text-slate-700 shadow-sm hover:bg-slate-100 hover:border-slate-400 disabled:cursor-not-allowed disabled:opacity-50"
             >
               {q}
             </button>
@@ -165,13 +201,43 @@ export default function ChatBox() {
 
       {/* Input bar card */}
       <section className="flex flex-col gap-2 rounded-2xl border border-slate-200 bg-blue-100 p-4 shadow-md md:flex-row md:items-center">
-        <input
-          className="flex-1 rounded-xl border border-slate-300 bg-sky-50 px-4 py-3 text-base font-normal text-slate-800 placeholder-slate-400 focus:border-[#3399FF] focus:outline-none focus:ring-2 focus:ring-[#3399FF]/30"
-          placeholder="Enter a travel question for this destination"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={onKeyDown}
-        />
+        <div className="flex-1">
+          <label htmlFor="travel-question" className="sr-only">
+            Travel question
+          </label>
+          <input
+            id="travel-question"
+            className="w-full rounded-xl border border-slate-300 bg-sky-50 px-4 py-3 text-base font-normal text-slate-800 placeholder-slate-400 focus:border-[#3399FF] focus:outline-none focus:ring-2 focus:ring-[#3399FF]/30"
+            aria-describedby="question-help"
+            maxLength={MAX_QUESTION_LENGTH}
+            placeholder="Enter a travel question for this destination"
+            value={input}
+            onChange={(e) => {
+              setInput(e.target.value);
+              if (inputError) setInputError(null);
+            }}
+            onKeyDown={onKeyDown}
+          />
+          <p
+            id="question-help"
+            className={`mt-1 text-xs ${
+              input.length >= MAX_QUESTION_LENGTH
+                ? "font-semibold text-amber-700"
+                : "text-slate-500"
+            }`}
+            aria-live={
+              input.length >= MAX_QUESTION_LENGTH * 0.8 ? "polite" : "off"
+            }
+          >
+            {input.length.toLocaleString()} /{" "}
+            {MAX_QUESTION_LENGTH.toLocaleString()} characters
+          </p>
+          {inputError && (
+            <p className="mt-1 text-xs text-red-700" role="alert">
+              {inputError}
+            </p>
+          )}
+        </div>
         <button
           type="button"
           onClick={() => void send()}

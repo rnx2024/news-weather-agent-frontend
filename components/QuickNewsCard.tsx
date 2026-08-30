@@ -4,6 +4,7 @@
 import { useState, type FormEvent } from "react";
 import { newsRequest } from "../lib/api";
 import { getErrorMessage } from "../lib/errors";
+import { MAX_PLACE_LENGTH } from "../lib/schemas";
 
 type NewsItem = {
   id: string; // ✅ added for stable React keys
@@ -25,6 +26,10 @@ export default function QuickNewsCard() {
     e.preventDefault();
     const trimmed = place.trim();
     if (!trimmed) return;
+    if (trimmed.length > MAX_PLACE_LENGTH) {
+      setError(`Destination must be ${MAX_PLACE_LENGTH} characters or fewer.`);
+      return;
+    }
 
     setLoading(true);
     setError(null);
@@ -68,6 +73,7 @@ export default function QuickNewsCard() {
       <form onSubmit={onSubmit} className="flex gap-2">
         <input
           className="flex-1 rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm font-normal text-slate-800 placeholder-slate-400 focus:border-[#3399FF] focus:outline-none focus:ring-2 focus:ring-[#3399FF]/30"
+          maxLength={MAX_PLACE_LENGTH}
           value={place}
           onChange={(e) => setPlace(e.target.value)}
           placeholder="e.g. Vigan"
