@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.3.0](https://github.com/rnx2024/tripbites/compare/v0.2.1...v0.3.0) (2026-09-05)
+
+
+### Features
+
+* **ui:** add risk and source badges ([64cc914](https://github.com/rnx2024/tripbites/commit/64cc91468c80bae29f57d680814b8e583cfecb4a))
+
+
+### Bug Fixes
+
+* **frontend:** handle backend cold starts ([c4bb222](https://github.com/rnx2024/tripbites/commit/c4bb222c78e908a22b49af91fb77fd6effde2d29))
+* **frontend:** harden security and proxy responses ([251c248](https://github.com/rnx2024/tripbites/commit/251c248e2643d4a9d99f510199cc2857ed2ce345))
+
 ## [0.2.1](https://github.com/rnx2024/tripbites/compare/v0.2.0...v0.2.1) (2026-08-30)
 
 
