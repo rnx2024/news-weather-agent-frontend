@@ -35,7 +35,7 @@ export default function MessageBubble({
   return (
     <div className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
       <div
-        className={`max-w-xl rounded-2xl px-4 py-2 text-sm whitespace-pre-wrap ${
+        className={`min-w-0 max-w-xl overflow-hidden rounded-2xl px-4 py-2 text-sm whitespace-pre-wrap break-words ${
           isUser
             ? "text-white shadow-sm"
             : "bg-white text-slate-900 shadow-sm border border-slate-200"
@@ -229,17 +229,29 @@ function buildAnchor(
   isUser: boolean,
   start: number
 ) {
+  const displayLabel = compactLinkLabel(label, href);
   return (
     <a
       key={`link-${start}-${href}`}
       href={href}
       target="_blank"
-      rel="noreferrer"
-      className={linkClassName(isUser)}
+      rel="noopener noreferrer"
+      aria-label={`Open source link: ${href}`}
+      className={`inline-block max-w-full break-all ${linkClassName(isUser)}`}
     >
-      {label}
+      {displayLabel}
     </a>
   );
+}
+
+function compactLinkLabel(label: string, href: string) {
+  if (label.length <= 80) return label;
+
+  try {
+    return new URL(href).hostname || "Open source";
+  } catch {
+    return "Open source";
+  }
 }
 
 function linkClassName(isUser: boolean) {
