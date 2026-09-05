@@ -64,6 +64,7 @@ export async function passthrough(upstream: Response): Promise<NextResponse> {
     status: upstream.status,
     headers: {
       "Content-Type": contentType,
+      "Cache-Control": "no-store",
     },
   });
 }

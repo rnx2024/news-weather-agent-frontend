@@ -72,7 +72,10 @@ describe("ChatBox", () => {
     await user.click(screen.getByRole("button", { name: "Send" }));
 
     expect(
-      await screen.findByText("Error contacting backend: Network down")
+      await screen.findByText(
+        "The backend is temporarily unavailable. Please try again."
+      )
     ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Retry" })).toBeInTheDocument();
   });
 });

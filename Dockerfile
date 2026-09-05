@@ -16,7 +16,7 @@ COPY app ./app
 COPY components ./components
 COPY lib ./lib
 COPY public ./public
-COPY next.config.ts tsconfig.json next-env.d.ts postcss.config.mjs eslint.config.mjs ./
+COPY next.config.ts tsconfig.json next-env.d.ts postcss.config.mjs eslint.config.mjs vitest.setup.ts ./
 COPY package.json package-lock.json ./
 RUN npm run build
 

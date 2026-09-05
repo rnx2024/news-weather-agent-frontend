@@ -1,5 +1,6 @@
 // lib/api.ts
 import { ApiError, throwIfNotOk } from "./apiError";
+import { fetchWithGetRetry } from "./request";
 import {
   ChatResponseSchema,
   NewsResponseSchema,
@@ -41,9 +42,9 @@ export async function chatRequest(place: string, question: string) {
 }
 
 export async function weatherRequest(place: string) {
-  const res = await fetch(`/api/weather?place=${encodeURIComponent(place)}`, {
-    method: "GET",
-  });
+  const res = await fetchWithGetRetry(
+    `/api/weather?place=${encodeURIComponent(place)}`
+  );
 
   await throwIfNotOk(res);
 
@@ -51,9 +52,9 @@ export async function weatherRequest(place: string) {
 }
 
 export async function newsRequest(place: string) {
-  const res = await fetch(`/api/news?place=${encodeURIComponent(place)}`, {
-    method: "GET",
-  });
+  const res = await fetchWithGetRetry(
+    `/api/news?place=${encodeURIComponent(place)}`
+  );
 
   await throwIfNotOk(res);
 

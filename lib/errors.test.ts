@@ -3,9 +3,9 @@ import { describe, expect, it } from "vitest";
 import { getErrorMessage } from "./errors";
 
 describe("getErrorMessage", () => {
-  it("returns the Error's message when present", () => {
+  it("uses the fallback for generic errors", () => {
     expect(getErrorMessage(new Error("Something broke"), "fallback")).toBe(
-      "Something broke"
+      "fallback"
     );
   });
 

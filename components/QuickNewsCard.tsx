@@ -21,10 +21,12 @@ export default function QuickNewsCard() {
   const [note, setNote] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [lastRequestedPlace, setLastRequestedPlace] = useState<string | null>(
+    null
+  );
 
-  async function onSubmit(e: FormEvent) {
-    e.preventDefault();
-    const trimmed = place.trim();
+  async function loadNews(requestedPlace = place) {
+    const trimmed = requestedPlace.trim();
     if (!trimmed) return;
     if (trimmed.length > MAX_PLACE_LENGTH) {
       setError(`Destination must be ${MAX_PLACE_LENGTH} characters or fewer.`);
@@ -33,6 +35,7 @@ export default function QuickNewsCard() {
 
     setLoading(true);
     setError(null);
+    setLastRequestedPlace(trimmed);
     setItems(null);
     setTravelRelevance(null);
     setNote(null);
@@ -53,6 +56,11 @@ export default function QuickNewsCard() {
     } finally {
       setLoading(false);
     }
+  }
+
+  function onSubmit(e: FormEvent) {
+    e.preventDefault();
+    void loadNews();
   }
 
   return (
@@ -89,7 +97,20 @@ export default function QuickNewsCard() {
       </form>
 
       <div className="min-h-[3rem] space-y-1 text-sm leading-6 text-slate-700">
-        {error && <p className="text-red-600">{error}</p>}
+        {error && (
+          <div className="space-y-2">
+            <p className="text-red-600">{error}</p>
+            {lastRequestedPlace && (
+              <button
+                type="button"
+                onClick={() => void loadNews(lastRequestedPlace)}
+                className="rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50"
+              >
+                Retry
+              </button>
+            )}
+          </div>
+        )}
 
         {!error && items && items.length > 0 && (
           <div className="space-y-2">

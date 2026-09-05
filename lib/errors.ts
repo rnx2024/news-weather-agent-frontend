@@ -1,6 +1,8 @@
+import { isTransientApiError } from "./apiError";
+
 export function getErrorMessage(error: unknown, fallback: string): string {
-  if (error instanceof Error && error.message) {
-    return error.message;
+  if (isTransientApiError(error)) {
+    return "The backend is waking up or temporarily unavailable. Please try again in a moment.";
   }
   return fallback;
 }

@@ -108,6 +108,28 @@ describe("weatherRequest", () => {
     });
     expect(result.summary).toBe("Sunny, 28C");
   });
+
+  it("retries a transient backend response once", async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(
+        jsonResponse({ error: { code: "UPSTREAM_TIMEOUT" } }, 504)
+      )
+      .mockResolvedValueOnce(
+        jsonResponse({
+          place: "Vigan",
+          summary: "Sunny, 28C",
+          travel_relevance: "Good day for walking tours.",
+          travel_advice: [],
+        })
+      );
+    vi.stubGlobal("fetch", fetchMock);
+
+    await expect(weatherRequest("Vigan")).resolves.toMatchObject({
+      summary: "Sunny, 28C",
+    });
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
 });
 
 describe("newsRequest", () => {

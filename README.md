@@ -35,13 +35,18 @@ Chat also uses a backend session:
 - `POST /api/chat` creates/refreshes a backend session and stores it in HttpOnly cookies: `tb_sid`, `tb_stk`
 - Those cookies are then sent by the browser on subsequent chat requests
 
+Rate limiting is enforced authoritatively by the backend. This frontend does
+not use an in-memory limiter because the recommended Vercel deployment can run
+API routes on separate serverless instances; a local limiter would not provide
+a reliable global limit.
+
 ## Environment variables
 
 All required variables are server-side only (used by `app/api/*`).
 
 - `BACKEND_URL` (example: `http://localhost:8000`)
 - `EXTERNAL_API_KEY` (backend API key used in `x-api-key` header)
-- `BACKEND_TIMEOUT_MS` (request timeout in milliseconds, default `15000`)
+- `BACKEND_TIMEOUT_MS` (request timeout in milliseconds, default `60000`)
 
 See `.env.example` for the full list.
 

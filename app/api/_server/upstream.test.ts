@@ -13,6 +13,7 @@ describe("passthrough", () => {
 
     expect(result.status).toBe(200);
     expect(result.headers.get("content-type")).toContain("application/json");
+    expect(result.headers.get("cache-control")).toBe("no-store");
     expect(await result.json()).toEqual({ ok: true });
   });
 
@@ -25,6 +26,7 @@ describe("passthrough", () => {
     const result = await passthrough(upstream);
 
     expect(result.status).toBe(502);
+    expect(result.headers.get("cache-control")).toBe("no-store");
     const body = await result.json();
     expect(body.error.code).toBe("UPSTREAM_ERROR");
     expect(JSON.stringify(body)).not.toContain("<html>");
@@ -40,6 +42,7 @@ describe("passthrough", () => {
     const result = await passthrough(upstream);
 
     expect(result.status).toBe(503);
+    expect(result.headers.get("cache-control")).toBe("no-store");
     const body = await result.json();
     expect(body.error.code).toBe("UPSTREAM_ERROR");
     expect(JSON.stringify(body)).not.toContain("Service Suspended");
