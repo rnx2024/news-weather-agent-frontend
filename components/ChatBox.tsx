@@ -186,7 +186,7 @@ export default function ChatBox() {
         ))}
         {loading && (
           <div className="flex justify-start pt-1">
-            <LoadingDots />
+            <LoadingDots label="Researching current travel information…" />
           </div>
         )}
         {!loading && failedRequest && (

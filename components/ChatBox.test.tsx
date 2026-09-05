@@ -3,7 +3,7 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import ChatBox from "./ChatBox";
 import { chatRequest } from "../lib/api";
-import { MAX_QUESTION_LENGTH } from "../lib/schemas";
+import { MAX_QUESTION_LENGTH, type ChatResponse } from "../lib/schemas";
 
 vi.mock("../lib/api", () => ({
   chatRequest: vi.fn(),
@@ -57,6 +57,35 @@ describe("ChatBox", () => {
       await screen.findByText("Looks fine for travel today.")
     ).toBeInTheDocument();
     expect(chatRequest).toHaveBeenCalledWith("Vigan", "Any disruptions?");
+  });
+
+  it("shows a research status while the chat request is pending", async () => {
+    let resolveRequest!: (value: ChatResponse) => void;
+    vi.mocked(chatRequest).mockReturnValue(
+      new Promise<ChatResponse>((resolve) => {
+        resolveRequest = resolve;
+      })
+    );
+
+    const user = userEvent.setup();
+    render(<ChatBox />);
+    const input = screen.getByPlaceholderText(
+      "Enter a travel question for this destination"
+    );
+    await user.type(input, "Any disruptions?");
+    await user.click(screen.getByRole("button", { name: "Send" }));
+
+    expect(screen.getByRole("status")).toHaveTextContent(
+      "Researching current travel information"
+    );
+
+    resolveRequest({
+      place: "Vigan",
+      final: "No confirmed disruptions.",
+      risk_level: "low",
+      travel_advice: [],
+      sources: [],
+    });
   });
 
   it("shows a friendly error message when the request fails", async () => {

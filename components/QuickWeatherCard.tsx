@@ -5,6 +5,7 @@ import { useState, type FormEvent } from "react";
 import { weatherRequest } from "../lib/api";
 import { getErrorMessage } from "../lib/errors";
 import { MAX_PLACE_LENGTH } from "../lib/schemas";
+import LoadingDots from "./LoadingDots";
 
 export default function QuickWeatherCard() {
   const [place, setPlace] = useState("Vigan");
@@ -69,6 +70,7 @@ export default function QuickWeatherCard() {
           className="flex-1 rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm font-normal text-slate-800 placeholder-slate-400 focus:border-[#3399FF] focus:outline-none focus:ring-2 focus:ring-[#3399FF]/30"
           maxLength={MAX_PLACE_LENGTH}
           value={place}
+          disabled={loading}
           onChange={(e) => setPlace(e.target.value)}
           placeholder="e.g. Vigan"
         />
@@ -78,11 +80,16 @@ export default function QuickWeatherCard() {
           className="inline-flex items-center justify-center rounded-md px-3 py-2.5 text-sm font-semibold text-white shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
           style={{ backgroundColor: "#5ba5efff" }}
         >
-          {loading ? "..." : "Check"}
+          {loading ? "Checking…" : "Check"}
         </button>
       </form>
 
       <div className="min-h-[2rem] text-sm leading-6 text-slate-700">
+        {loading && (
+          <LoadingDots
+            label={`Checking current weather for ${place.trim()}…`}
+          />
+        )}
         {error && (
           <div className="space-y-2">
             <p className="text-red-600">{error}</p>

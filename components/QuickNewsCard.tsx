@@ -5,6 +5,7 @@ import { useState, type FormEvent } from "react";
 import { newsRequest } from "../lib/api";
 import { getErrorMessage } from "../lib/errors";
 import { MAX_PLACE_LENGTH } from "../lib/schemas";
+import LoadingDots from "./LoadingDots";
 
 type NewsItem = {
   id: string; // ✅ added for stable React keys
@@ -83,6 +84,7 @@ export default function QuickNewsCard() {
           className="flex-1 rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm font-normal text-slate-800 placeholder-slate-400 focus:border-[#3399FF] focus:outline-none focus:ring-2 focus:ring-[#3399FF]/30"
           maxLength={MAX_PLACE_LENGTH}
           value={place}
+          disabled={loading}
           onChange={(e) => setPlace(e.target.value)}
           placeholder="e.g. Vigan"
         />
@@ -92,11 +94,14 @@ export default function QuickNewsCard() {
           className="inline-flex items-center justify-center rounded-md px-3 py-2.5 text-sm font-semibold text-white shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
           style={{ backgroundColor: "#5ba5efff" }}
         >
-          {loading ? "..." : "Fetch"}
+          {loading ? "Searching…" : "Fetch"}
         </button>
       </form>
 
       <div className="min-h-[3rem] space-y-1 text-sm leading-6 text-slate-700">
+        {loading && (
+          <LoadingDots label={`Searching recent news for ${place.trim()}…`} />
+        )}
         {error && (
           <div className="space-y-2">
             <p className="text-red-600">{error}</p>
