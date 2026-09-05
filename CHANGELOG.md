@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.3.1](https://github.com/rnx2024/tripbites/compare/v0.3.0...v0.3.1) (2026-09-05)
+
+
+### Bug Fixes
+
+* **frontend:** contain source links and show request progress ([9d9ef68](https://github.com/rnx2024/tripbites/commit/9d9ef6803a75667291a7e7a9a58b62d6bafa0e3f))
+* **frontend:** contain source links and show request progress ([7de37bf](https://github.com/rnx2024/tripbites/commit/7de37bf5a892a403b857fbca9c89ea8801a0f2d6))
+
 ## [0.3.0](https://github.com/rnx2024/tripbites/compare/v0.2.1...v0.3.0) (2026-09-05)
 
 
