@@ -13,10 +13,12 @@ export default function QuickWeatherCard() {
   const [travelAdvice, setTravelAdvice] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [lastRequestedPlace, setLastRequestedPlace] = useState<string | null>(
+    null
+  );
 
-  async function onSubmit(e: FormEvent) {
-    e.preventDefault();
-    const trimmed = place.trim();
+  async function loadWeather(requestedPlace = place) {
+    const trimmed = requestedPlace.trim();
     if (!trimmed) return;
     if (trimmed.length > MAX_PLACE_LENGTH) {
       setError(`Destination must be ${MAX_PLACE_LENGTH} characters or fewer.`);
@@ -25,6 +27,7 @@ export default function QuickWeatherCard() {
 
     setLoading(true);
     setError(null);
+    setLastRequestedPlace(trimmed);
     setSummary(null);
     setTravelRelevance(null);
     setTravelAdvice([]);
@@ -39,6 +42,11 @@ export default function QuickWeatherCard() {
     } finally {
       setLoading(false);
     }
+  }
+
+  function onSubmit(e: FormEvent) {
+    e.preventDefault();
+    void loadWeather();
   }
 
   return (
@@ -75,7 +83,20 @@ export default function QuickWeatherCard() {
       </form>
 
       <div className="min-h-[2rem] text-sm leading-6 text-slate-700">
-        {error && <p className="text-red-600">{error}</p>}
+        {error && (
+          <div className="space-y-2">
+            <p className="text-red-600">{error}</p>
+            {lastRequestedPlace && (
+              <button
+                type="button"
+                onClick={() => void loadWeather(lastRequestedPlace)}
+                className="rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50"
+              >
+                Retry
+              </button>
+            )}
+          </div>
+        )}
         {!error && summary && (
           <div className="space-y-2">
             <p className="whitespace-pre-line">{summary}</p>

@@ -21,7 +21,7 @@ function isValidPositiveInt(value: number) {
 export function getServerConfig(): Result<ServerConfig, ConfigError> {
   const backendUrl = process.env.BACKEND_URL ?? "";
   const apiKey = process.env.EXTERNAL_API_KEY ?? "";
-  const backendTimeoutMsRaw = Number(process.env.BACKEND_TIMEOUT_MS ?? "15000");
+  const backendTimeoutMsRaw = Number(process.env.BACKEND_TIMEOUT_MS ?? "60000");
 
   const missing: string[] = [];
   if (!backendUrl) missing.push("BACKEND_URL");

@@ -37,6 +37,10 @@ export default function ChatBox() {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [inputError, setInputError] = useState<string | null>(null);
+  const [failedRequest, setFailedRequest] = useState<{
+    place: string;
+    question: string;
+  } | null>(null);
 
   async function send(question?: string) {
     const q = (question ?? input).trim();
@@ -54,6 +58,7 @@ export default function ChatBox() {
     }
 
     setInputError(null);
+    setFailedRequest(null);
 
     const userMsg: Msg = { id: crypto.randomUUID(), role: "user", text: q };
     setMessages((m) => [...m, userMsg]);
@@ -74,6 +79,7 @@ export default function ChatBox() {
         sources: assistant.sources,
       };
       setMessages((m) => [...m, botMsg]);
+      setFailedRequest(null);
     } catch (error: unknown) {
       if (
         error instanceof ApiError &&
@@ -88,9 +94,13 @@ export default function ChatBox() {
       const errMsg: Msg = {
         id: crypto.randomUUID(),
         role: "assistant",
-        text: `Error contacting backend: ${getErrorMessage(error, "Chat request failed")}`,
+        text: getErrorMessage(
+          error,
+          "The backend is temporarily unavailable. Please try again."
+        ),
       };
       setMessages((m) => [...m, errMsg]);
+      setFailedRequest({ place: parsedRequest.data.place, question: q });
     } finally {
       setLoading(false);
       if (!question) {
@@ -175,6 +185,20 @@ export default function ChatBox() {
         {loading && (
           <div className="flex justify-start pt-1">
             <LoadingDots />
+          </div>
+        )}
+        {!loading && failedRequest && (
+          <div className="flex items-center justify-start gap-3 pt-1">
+            <p className="text-sm text-slate-500">
+              You can retry this request.
+            </p>
+            <button
+              type="button"
+              onClick={() => void send(failedRequest.question)}
+              className="rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50"
+            >
+              Retry
+            </button>
           </div>
         )}
       </section>

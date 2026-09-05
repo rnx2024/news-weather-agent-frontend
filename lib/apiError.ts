@@ -25,6 +25,13 @@ export class ApiError extends Error {
   }
 }
 
+export function isTransientApiError(error: unknown): boolean {
+  return (
+    error instanceof ApiError &&
+    (error.status === 502 || error.status === 503 || error.status === 504)
+  );
+}
+
 async function tryReadJson(res: Response): Promise<unknown> {
   try {
     return await res.json();
