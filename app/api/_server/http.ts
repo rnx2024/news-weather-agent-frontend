@@ -22,7 +22,10 @@ export function jsonError(
     },
   };
 
-  return NextResponse.json(body, { status });
+  return NextResponse.json(body, {
+    status,
+    headers: { "Cache-Control": "no-store" },
+  });
 }
 
 export async function fetchWithTimeout(
