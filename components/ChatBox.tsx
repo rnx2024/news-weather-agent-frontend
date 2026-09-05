@@ -8,6 +8,8 @@ import {
   ChatRequestSchema,
   MAX_PLACE_LENGTH,
   MAX_QUESTION_LENGTH,
+  type ChatSource,
+  type RiskLevel,
   type ChatResponse,
 } from "../lib/schemas";
 import { useState, type KeyboardEvent } from "react";
@@ -18,9 +20,9 @@ type Msg = {
   id: string;
   role: "user" | "assistant";
   text: string;
-  riskLevel?: string;
+  riskLevel?: RiskLevel;
   travelAdvice?: string[];
-  sources?: { type: string }[];
+  sources?: ChatSource[];
 };
 
 const PRESET_PLACES = ["Vigan", "Laoag", "Manila", "Cebu", "Davao"];

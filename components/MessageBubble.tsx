@@ -1,10 +1,13 @@
 // components/MessageBubble.tsx
+import type { ChatSource, RiskLevel } from "../lib/schemas";
+import ResponseBadges from "./ResponseBadges";
+
 type Props = {
   role: "user" | "assistant";
   text: string;
-  riskLevel?: string;
+  riskLevel?: RiskLevel;
   travelAdvice?: string[];
-  sources?: { type: string }[];
+  sources?: ChatSource[];
 };
 
 type LinkMatch = {
@@ -40,22 +43,13 @@ export default function MessageBubble({
         style={isUser ? { backgroundColor: "#0066CC" } : undefined}
       >
         <div className="space-y-2">{renderMessageText(text, isUser)}</div>
-        {!isUser && riskLevel && (
-          <p className="mt-3 text-xs font-semibold uppercase tracking-wide text-sky-700">
-            Risk level: {riskLevel}
-          </p>
-        )}
+        {!isUser && <ResponseBadges riskLevel={riskLevel} sources={sources} />}
         {!isUser && travelAdvice && travelAdvice.length > 0 && (
           <ul className="mt-2 space-y-1 text-xs text-slate-600">
             {travelAdvice.map((item) => (
               <li key={item}>- {item}</li>
             ))}
           </ul>
-        )}
-        {!isUser && sources && sources.length > 0 && (
-          <p className="mt-2 text-[11px] uppercase tracking-wide text-slate-400">
-            Sources: {sources.map((source) => source.type).join(", ")}
-          </p>
         )}
       </div>
     </div>

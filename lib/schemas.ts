@@ -42,14 +42,18 @@ const nullableToOptional = <T extends z.ZodTypeAny>(schema: T) =>
     .optional()
     .transform((v) => v ?? undefined);
 
+export const RiskLevelSchema = z.enum(["low", "medium", "high"]);
+export type RiskLevel = z.infer<typeof RiskLevelSchema>;
+
 export const ChatSourceSchema = z.object({
-  type: z.string(),
+  type: z.enum(["weather", "news"]),
 });
+export type ChatSource = z.infer<typeof ChatSourceSchema>;
 
 export const ChatResponseSchema = z.object({
   place: z.string(),
   final: z.string(),
-  risk_level: nullableToOptional(z.string()),
+  risk_level: nullableToOptional(RiskLevelSchema),
   travel_advice: z.array(z.string()),
   sources: z.array(ChatSourceSchema),
 });
